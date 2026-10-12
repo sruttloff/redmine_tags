@@ -17,7 +17,7 @@ class TagsController < ApplicationController
   end
 
   def update
-    @tag.update_attributes(name: params[:tag][:name])
+    @tag.update(name: params[:tag][:name])
     if @tag.save
       flash[:notice] = l :notice_successful_update
       respond_to do |format|
@@ -44,9 +44,10 @@ class TagsController < ApplicationController
     if request.post? && params[:tag] && params[:tag][:name]
       ActsAsTaggableOn::Tagging.transaction do
         tag = ActsAsTaggableOn::Tag.where(name: params[:tag][:name]).first ||
-          ActsAsTaggableOn::Tag.create(params[:tag])
+          ActsAsTaggableOn::Tag.create(name: params[:tag][:name])
         ActsAsTaggableOn::Tagging.where(tag_id: @tags.map(&:id))
           .update_all(tag_id: tag.id)
+        remove_duplicate_taggings(tag)
         @tags.select{|t| t.id != tag.id }.each {|t| t.destroy }
         redirect_to controller: 'settings', action: 'plugin',
           id: 'redmine_tags', tab: 'manage_tags'
@@ -55,6 +56,17 @@ class TagsController < ApplicationController
   end
 
   private
+
+  # Objects that carried several of the merged tags end up with one tagging per
+  # merged tag, all pointing at the same tag now. Keep the first one only and
+  # repair the counter cache, which update_all/delete_all bypass.
+  def remove_duplicate_taggings(tag)
+    duplicates = ActsAsTaggableOn::Tagging.where(tag_id: tag.id)
+      .group_by { |tagging| [tagging.taggable_type, tagging.taggable_id, tagging.context] }
+      .flat_map { |_, taggings| taggings.sort_by(&:id).drop(1) }
+    ActsAsTaggableOn::Tagging.where(id: duplicates.map(&:id)).delete_all if duplicates.any?
+    ActsAsTaggableOn::Tag.reset_counters(tag.id, :taggings)
+  end
 
   def bulk_find_tags
     @tags = ActsAsTaggableOn::Tag.where(id: params[:id] || params[:ids]).all

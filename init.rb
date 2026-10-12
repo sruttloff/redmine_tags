@@ -4,8 +4,8 @@ Redmine::Plugin.register :redmine_tags do
   name        'Redmine Tags'
   author      'Aleksey V Zapparov AKA "ixti"'
   description 'Redmine tagging support'
-  version     '1.0.5'
-  url         'https://github.com/tools-aoeur/redmine_tags'
+  version     '1.1.0'
+  url         'https://github.com/sruttloff/redmine_tags'
 
   requires_redmine version_or_higher: '5.0.0'
 
