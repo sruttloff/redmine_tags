@@ -105,13 +105,7 @@ RAILS_ENV=production bundle exec rails runner plugins/redmine_tags/test/release_
 
 The check verifies plugin registration, tag persistence, issue and project JSON API output, tag filtering, wiki tag persistence, and merge deduplication with counter repair. It uses temporary records inside a rolled-back database transaction. Run it on a development or staging installation with no concurrent writes.
 
-The inherited tests can also be run in a separately configured test database:
-
-```sh
-RAILS_ENV=test bundle exec rake redmine:plugins:test NAME=redmine_tags
-```
-
-The release smoke check does not establish complete browser, XML, permissions, reload, or cross-database compatibility. The inherited CI configuration and tests are retained from upstream; their full matrix has not been validated locally for this release.
+The release smoke check does not establish complete browser, XML, permissions, reload, or cross-database compatibility. The former upstream CI matrix and legacy test files targeted a different Redmine fork and are no longer part of this fork.
 
 ## More plugins from SaaS-Secure.com
 

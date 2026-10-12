@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+- Remove upstream development tooling configured for Ruby 3.1 and Rails 6.1.
+- Remove CI configuration tied to the tools-aoeur Redmine fork and its test database files.
+- Remove legacy RSpec and Redmine test files without a working test setup in this fork.
+- Keep the transactional Redmine 6.1 release smoke check.
+
 ## 1.1.0 — 2026-10-12
 
 First release of the SaaS-Secure.com fork for Redmine 6.1, based on the
